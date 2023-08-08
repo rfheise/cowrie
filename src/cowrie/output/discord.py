@@ -21,20 +21,38 @@ class Output(cowrie.core.output.Output):
         self.url = CowrieConfig.get("output_discord", "url").encode("utf8")
         contextFactory = WebClientContextFactory()
         self.agent = client.Agent(reactor, contextFactory)
-
+        
+        #get list of events user wants to be notified for
+        events = CowrieConfig.get("output_discord","events")
+        
+        # create set of events for the users list in the
+        # config file
+        self.events = set()
+        for event in events.split(","):
+            self.events.add(event.replace(" ",""))
+        
     def stop(self) -> None:
         pass
 
     def write(self, logentry):
         webhook_message = "__New logentry__\n"
 
+        # compare eventid to events in self.events
+        try:
+            eventid = logentry["eventid"]
+        except:
+            return 
+        # if eventid not in list of events the user wants
+        # to be notified of then return
+        if eventid not in self.events and "all" not in self.events:
+            return
+            
         for i in list(logentry.keys()):
             # Remove twisted 15 legacy keys
             if i.startswith("log_"):
                 del logentry[i]
             else:
                 webhook_message += f"{i}: `{logentry[i]}`\n"
-
         self.postentry({"content": webhook_message})
 
     def postentry(self, entry):

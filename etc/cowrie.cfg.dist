@@ -1048,6 +1048,11 @@ bearer_token = THREATJAMMER_API_TOKEN
 [output_discord]
 enabled = false
 url = https://discord.com/api/webhooks/id/token
+# used to select events to be notified for 
+# all denotes all events will be sent to discord webhook
+# otherwise use a comma seperated list to list events i.e.
+# events = cowrie.command.input, cowrie.login.success, cowrie.login.failure, cowrie.session.closed
+events = all
 
 # Datadog output module
 # sends JSON directly to Datadog
