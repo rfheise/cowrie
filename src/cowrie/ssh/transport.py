@@ -56,6 +56,8 @@ class HoneyPotSSHTransport(transport.SSHServerTransport, TimeoutMixin):
         Called when the connection is made from the other side.
         We send our version, but wait with sending KEXINIT
         """
+
+
         self.buf = b""
 
         self.transportId = uuid.uuid4().hex[:12]
@@ -109,6 +111,7 @@ class HoneyPotSSHTransport(transport.SSHServerTransport, TimeoutMixin):
 
         @type data: C{str}
         """
+    
         self.buf = self.buf + data
         if not self.gotVersion:
             if b"\n" not in self.buf:
@@ -140,6 +143,11 @@ class HoneyPotSSHTransport(transport.SSHServerTransport, TimeoutMixin):
             self.sendKexInit()
         packet = self.getPacket()
         while packet:
+            # log.msg(
+            #     eventid="cowrie.packet.rec",
+            #     format=f"{str(packet)}",
+            #     protocol="ssh",
+            # )
             messageNum = ord(packet[0:1])
             self.dispatchMessage(messageNum, packet[1:])
             packet = self.getPacket()
@@ -174,6 +182,11 @@ class HoneyPotSSHTransport(transport.SSHServerTransport, TimeoutMixin):
             padding = randbytes.secureRandom(lenPad)
 
         packet = struct.pack(b"!LB", totalSize + lenPad - 4, lenPad) + payload + padding
+        # log.msg(
+        #         eventid="cowrie.packet.send",
+        #         format=f"{str(packet)}",
+        #         protocol="ssh",
+        #     )
         encPacket = self.currentEncryptions.encrypt(
             packet
         ) + self.currentEncryptions.makeMAC(self.outgoingPacketSequence, packet)

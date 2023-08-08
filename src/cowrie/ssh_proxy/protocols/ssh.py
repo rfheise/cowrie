@@ -127,6 +127,7 @@ class SSH(base_protocol.BaseProtocol):
                 protocol="ssh",
             )
 
+
         if packet == "SSH_MSG_SERVICE_REQUEST":
             service = self.extract_string()
             if service == b"ssh-userauth":

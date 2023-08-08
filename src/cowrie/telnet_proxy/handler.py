@@ -133,6 +133,7 @@ class TelnetHandler:
             )
 
     def sendBackend(self, data: bytes) -> None:
+
         self.backend_buffer.append(data)
 
         if not self.client:

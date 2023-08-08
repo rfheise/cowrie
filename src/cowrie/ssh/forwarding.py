@@ -164,6 +164,7 @@ class TCPTunnelForwardingChannel(forwarding.SSHConnectForwardingChannel):
         """
         Modifies the original to strip off the TCP tunnel response
         """
+        
         if not self.tunnel_established and data[:4].lower() == b"http":
             # Check proxy response code
             try:
